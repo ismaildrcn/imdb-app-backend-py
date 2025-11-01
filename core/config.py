@@ -10,6 +10,7 @@ class Settings:
     LOCAL_URL: str = os.getenv("LOCAL_URL")
     LOCAL_PORT: int = int(os.getenv("LOCAL_PORT", 8000))
     JWT_SECRET: str = os.getenv("JWT_SECRET")
+    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
 
     # Database Settings
     DB_USER: str = os.getenv("DB_USER")

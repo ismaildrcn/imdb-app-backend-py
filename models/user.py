@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, Enum, DateTime
-from sqlalchemy.orm import validates
+from sqlalchemy.orm import validates, relationship
 from core.database import Base
 import re
 
@@ -17,6 +17,8 @@ class User(Base):
     role = Column(Enum("user", "admin", "moderator"), default="user")
     last_login = Column(DateTime, nullable=True)
     created_at = Column(DateTime, nullable=False)
+    wishlist = relationship("Wishlist", back_populates="user", cascade="all, delete")
+
 
     @validates('phone')
     def validate_phone(self, key, phone):
