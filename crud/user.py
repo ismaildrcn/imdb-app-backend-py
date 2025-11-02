@@ -36,3 +36,10 @@ def verify_password(stored_password: str, provided_password: str) -> bool:
         return True
     except:
         return False
+    
+def movie_in_wishlist(db: Session, user_id: int, movie_id: int) -> bool:
+    wishlist_item = db.query(User).filter(
+        User.id == user_id,
+        User.wishlist.any(movie_id=movie_id)
+    ).first()
+    return wishlist_item is not None

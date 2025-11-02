@@ -1,5 +1,5 @@
 from pydantic import BaseModel
 
 class WishlistCreate(BaseModel):
-    imdb_id: str
+    movie_id: int
     note: str | None = None

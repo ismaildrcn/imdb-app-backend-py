@@ -1,7 +1,11 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from services.remote.external_api import RemoteMovieService
 from core.security import verify_token
+from core.database import get_db
+from sqlalchemy.orm import Session
+from crud.user import movie_in_wishlist
+
 
 movie_service = RemoteMovieService()
 
@@ -12,7 +16,21 @@ router = APIRouter(
 
 
 @router.get("/movie/{movie_id}", dependencies=[Depends(verify_token)])
-async def get_movie(movie_id):
+async def get_movie(
+    movie_id,
+    user_id: int = Query(None),
+    db: Session = Depends(get_db)
+):
+    movie_details = await movie_service.getMovieDetails(movie_id)
+    if user_id is not None:
+        is_in_wishlist = movie_in_wishlist(db, user_id, movie_id)
+        movie_details.update({"is_in_wishlist": is_in_wishlist})
+    if not movie_details:
+        raise HTTPException(status_code=404, detail="Movie not found")
+    return movie_details
+
+@router.get("/movie/{movie_id}/without-token")
+async def get_movie_without_token(movie_id):
     movie_details = await movie_service.getMovieDetails(movie_id)
     if not movie_details:
         raise HTTPException(status_code=404, detail="Movie not found")
