@@ -12,13 +12,13 @@ class RemoteMovieService:
         "Authorization": f"Bearer {API_TOKEN}"
     }
 
-    async def _make_request(self, endpoint: str):
+    async def _make_request(self, endpoint: str, query_params: Optional[dict] = None):
         """Ortak HTTP request fonksiyonu"""
         url = f"{self.BASE_URL}{endpoint}"
         print(f"Making request to URL: {url}")
         
         async with httpx.AsyncClient() as client:
-            response = await client.get(url, headers=self.headers)
+            response = await client.get(url, headers=self.headers, params=query_params)
             try:
                 response.raise_for_status()  # hata durumunda exception atar
                 return response.json()
@@ -42,3 +42,6 @@ class RemoteMovieService:
     
     async def getGenres(self):
         return await self._make_request("/genre/movie/list")
+    
+    async def searchMovies(self, query: str, page: Optional[int] = 1):
+        return await self._make_request("/search/movie", query_params={"query": query, "page": page})

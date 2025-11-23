@@ -70,3 +70,11 @@ async def get_genres():
     if not genres:
         raise HTTPException(status_code=404, detail="Genres not found")
     return genres
+
+@router.get("/search/movie", dependencies=[Depends(verify_token)])
+async def search_movies(query: str, page: int = 1):
+    print(f"Searching movies with query: {query}, page: {page}")
+    search_results = await movie_service.searchMovies(query, page)
+    if not search_results:
+        raise HTTPException(status_code=404, detail="No movies found for the given query")
+    return search_results
