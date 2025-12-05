@@ -21,7 +21,10 @@ async def get_movie(
     user_id: int = Query(None),
     db: Session = Depends(get_db)
 ):
-    movie_details = await movie_service.getMovieDetails(movie_id)
+    if not str(movie_id).isnumeric():
+        movie_details = await movie_service.getMovieDetailsByCategory(movie_id)
+    else:
+        movie_details = await movie_service.getMovieDetails(movie_id)
     if user_id is not None:
         is_in_wishlist = movie_in_wishlist(db, user_id, movie_id)
         movie_details.update({"is_in_wishlist": is_in_wishlist})
@@ -31,7 +34,7 @@ async def get_movie(
 
 @router.get("/movie/{movie_id}/without-token")
 async def get_movie_without_token(movie_id):
-    movie_details = await movie_service.getMovieDetails(movie_id)
+    movie_details = await movie_service.getMovieDetailsByCategory(movie_id)
     if not movie_details:
         raise HTTPException(status_code=404, detail="Movie not found")
     return movie_details
