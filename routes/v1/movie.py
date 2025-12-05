@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, Query
 
 from services.remote.external_api import RemoteMovieService
@@ -14,6 +16,7 @@ router = APIRouter(
     tags=["remote"]  # Swagger'da kategorize eder
 )
 
+categorical_movies_cache = {}
 
 @router.get("/movie/{movie_id}", dependencies=[Depends(verify_token)])
 async def get_movie(
@@ -22,7 +25,14 @@ async def get_movie(
     db: Session = Depends(get_db)
 ):
     if not str(movie_id).isnumeric():
+        if movie_id in categorical_movies_cache:
+            cached_time, cached_data = categorical_movies_cache[movie_id]
+            if datetime.now() - cached_time < timedelta(hours=1):
+                return cached_data
+        print(f"Fetching categorical movie details for ID: {movie_id}")
         movie_details = await movie_service.getMovieDetailsByCategory(movie_id)
+        if not categorical_movies_cache.get(movie_id):
+            categorical_movies_cache[movie_id] = (datetime.now(), movie_details)
     else:
         movie_details = await movie_service.getMovieDetails(movie_id)
     if user_id is not None:

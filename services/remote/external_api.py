@@ -37,13 +37,7 @@ class RemoteMovieService:
                     response = movie_to_dict(movie)  # Session açıkken dict'e çevir
             if not response:
                 response = await self._make_request(f"/movie/{movie_id}")
-                results = response.get("results", [])
-                for r in results:
-                    res = await self._make_request(f"/movie/{r['id']}")
-                    print("Saving movie from API:", res.get("title"))
-                    save_movie_from_api(db=db, movie_data=res)
-                if not results:
-                    save_movie_from_api(db=db, movie_data=response)
+                save_movie_from_api(db=db, movie_data=response)
         finally:
             db.close()  # Session'ı kapat
         return response

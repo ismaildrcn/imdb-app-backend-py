@@ -109,15 +109,23 @@ def get_or_create_collection(db: Session, collection_data: dict) -> Collection:
 def get_or_create_production_company(db: Session, company_data: dict) -> ProductionCompany:
     """ProductionCompany varsa getir, yoksa oluştur"""
     company = db.query(ProductionCompany).filter(ProductionCompany.id == company_data["id"]).first()
-    if not company:
-        company = ProductionCompany(
-            id=company_data["id"],
-            name=company_data["name"],
-            logo_path=company_data.get("logo_path"),
-            origin_country=company_data.get("origin_country")
-        )
-        db.add(company)
-        db.flush()
+
+    company = db.query(ProductionCompany).filter(ProductionCompany.id == company_data["id"]).first()
+    if company:
+        return company
+    
+    company = db.query(ProductionCompany).filter(ProductionCompany.name == company_data["name"]).first()
+    if company:
+        return company
+    
+    company = ProductionCompany(
+        id=company_data["id"],
+        name=company_data["name"],
+        logo_path=company_data.get("logo_path"),
+        origin_country=company_data.get("origin_country")
+    )
+    db.add(company)
+    db.flush()
     return company
 
 
@@ -126,13 +134,22 @@ def get_or_create_production_country(db: Session, country_data: dict) -> Product
     country = db.query(ProductionCountry).filter(
         ProductionCountry.iso_3166_1 == country_data["iso_3166_1"]
     ).first()
-    if not country:
-        country = ProductionCountry(
-            iso_3166_1=country_data["iso_3166_1"],
-            name=country_data["name"]
-        )
-        db.add(country)
-        db.flush()
+    if country:
+        return country
+    
+    country = db.query(ProductionCountry).filter(
+        ProductionCountry.iso_3166_1 == country_data["name"]
+    ).first()
+
+    if country:
+        return country
+
+    country = ProductionCountry(
+        iso_3166_1=country_data["iso_3166_1"],
+        name=country_data["name"]
+    )
+    db.add(country)
+    db.flush()
     return country
 
 
@@ -141,14 +158,16 @@ def get_or_create_spoken_language(db: Session, language_data: dict) -> SpokenLan
     language = db.query(SpokenLanguage).filter(
         SpokenLanguage.iso_639_1 == language_data["iso_639_1"]
     ).first()
-    if not language:
-        language = SpokenLanguage(
-            iso_639_1=language_data["iso_639_1"],
-            english_name=language_data["english_name"],
-            name=language_data["name"]
-        )
-        db.add(language)
-        db.flush()
+    if language:
+        return language
+    
+    language = SpokenLanguage(
+        iso_639_1=language_data["iso_639_1"],
+        english_name=language_data["english_name"],
+        name=language_data["name"]
+    )
+    db.add(language)
+    db.flush()
     return language
 
 
