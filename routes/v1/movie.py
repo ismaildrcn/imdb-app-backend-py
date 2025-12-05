@@ -29,6 +29,8 @@ async def get_movie(
             cached_time, cached_data = categorical_movies_cache[movie_id]
             if datetime.now() - cached_time < timedelta(hours=1):
                 return cached_data
+            else:
+                del categorical_movies_cache[movie_id]
         print(f"Fetching categorical movie details for ID: {movie_id}")
         movie_details = await movie_service.getMovieDetailsByCategory(movie_id)
         if not categorical_movies_cache.get(movie_id):
