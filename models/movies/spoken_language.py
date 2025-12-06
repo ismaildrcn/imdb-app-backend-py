@@ -5,7 +5,7 @@ from core.database import Base
 movie_spoken_language = Table(
     "movie_spoken_language",
     Base.metadata,
-    Column("movie_id", Integer, ForeignKey("movies.id"), primary_key=True),
+    Column("movie_id", Integer, ForeignKey("movies.movie_id"), primary_key=True),
     Column("spoken_language_id", Integer, ForeignKey("spoken_languages.spoken_language_id"), primary_key=True)
 )
 

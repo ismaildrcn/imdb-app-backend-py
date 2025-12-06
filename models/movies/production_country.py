@@ -5,7 +5,7 @@ from core.database import Base
 movie_production_country = Table(
     "movie_production_country",
     Base.metadata,
-    Column("movie_id", Integer, ForeignKey("movies.id"), primary_key=True),
+    Column("movie_id", Integer, ForeignKey("movies.movie_id"), primary_key=True),
     Column("production_country_id", Integer, ForeignKey("production_countries.production_country_id"), primary_key=True)
 )
 

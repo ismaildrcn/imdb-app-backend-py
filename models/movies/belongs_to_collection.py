@@ -7,7 +7,7 @@ from core.database import Base
 movie_collection = Table(
     "movie_collection",
     Base.metadata,
-    Column("movie_id", Integer, ForeignKey("movies.id"), primary_key=True),
+    Column("movie_id", Integer, ForeignKey("movies.movie_id"), primary_key=True),
     Column("collection_id", Integer, ForeignKey("collections.collection_id"), primary_key=True)
 )
 

@@ -34,7 +34,7 @@ class RemoteMovieService:
             if str(movie_id).isnumeric():
                 movie = get_movie_by_id(db=db, movie_id=int(movie_id))
                 if movie:
-                    response = movie_to_dict(movie)  # Session açıkken dict'e çevir
+                    response = movie_to_dict(movie)
             if not response:
                 response = await self._make_request(f"/movie/{movie_id}")
                 save_movie_from_api(db=db, movie_data=response)
@@ -62,3 +62,6 @@ class RemoteMovieService:
     
     async def searchMovies(self, query: str, page: Optional[int] = 1):
         return await self._make_request("/search/movie", query_params={"query": query, "page": page})
+    
+    async def getTrendingMovies(self, time_window: str = "week", page: int = 1):
+        return await self._make_request(f"/trending/movie/{time_window}", query_params={"page": page})

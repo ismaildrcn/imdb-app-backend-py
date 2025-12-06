@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Float
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, validates
 from core.database import Base
 
 
@@ -13,11 +13,12 @@ from models.movies.spoken_language import movie_spoken_language
 class Movie(Base):
     __tablename__ = "movies"
 
+    movie_id = Column(Integer, primary_key=True, index=True)
     adult = Column(Boolean, default=False)
     backdrop_path = Column(String(255), nullable=True)
     budget = Column(Integer, nullable=True)
     homepage = Column(String(255), nullable=True)
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, unique=True, index=True)
     imdb_id = Column(String(50), unique=True, index=True)
     
     origin_country = Column(String(100), nullable=True)
@@ -44,3 +45,10 @@ class Movie(Base):
     belongs_to_collection = relationship("Collection", secondary=movie_collection, back_populates="movies")
     production_countries = relationship("ProductionCountry", secondary=movie_production_country, back_populates="movies")
     spoken_languages = relationship("SpokenLanguage", secondary=movie_spoken_language, back_populates="movies")
+
+    @validates('imdb_id', 'homepage', 'tagline', 'backdrop_path', 'poster_path')
+    def convert_empty_to_none(self, key, value):
+        """Boş string değerlerini None'a çevir"""
+        if value == '' or (isinstance(value, str) and not value.strip()):
+            return None
+        return value
