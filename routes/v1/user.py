@@ -4,7 +4,9 @@ from sqlalchemy.orm import Session
 from core.database import get_db
 
 from core.security import verify_token
+from crud.user import update_user
 from models.wishlist import Wishlist
+from schemas.user.user_schemas import UserSchema
 from schemas.wishlist.wishlist_schemas import WishlistCreate
 from services.remote.external_api import RemoteMovieService
 
@@ -12,10 +14,23 @@ movie_service = RemoteMovieService()
 
 
 router = APIRouter(
-    prefix="/user",
-    tags=["user"]  # Swagger'da kategorize eder
-)   
+    prefix="/users",
+    tags=["users"]  # Swagger'da kategorize eder
+)
 
+@router.get("/me", dependencies=[Depends(verify_token)])
+def get_current_user(db: Session = Depends(get_db), token_data: dict = Depends(verify_token)):
+    user_email = token_data.get("email")
+    user = db.query(Wishlist).filter(Wishlist.user.has(email=user_email)).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user.user.to_json()
+
+@router.patch("/{user_id}", dependencies=[Depends(verify_token)])
+def update_user_details(user_id: int, payload: UserSchema, db: Session = Depends(get_db)):
+    print(payload)
+    update_user(db, payload)
+    return {"message": "User update endpoint called."}
 
 @router.post("/{user_id}/wishlist", dependencies=[Depends(verify_token)])
 def add_to_wishlist(user_id: int, payload: WishlistCreate, db: Session = Depends(get_db)):

@@ -1,3 +1,4 @@
+from datetime import datetime
 import jwt
 from fastapi import APIRouter, HTTPException, Depends
 from schemas.auth.login import UserBase, UserCreate
@@ -17,6 +18,9 @@ router = APIRouter(
 def login(login_request: UserBase, db: Session = Depends(get_db)):
     user = login_user(db, login_request)
     if user:
+        user.last_login = datetime.utcnow()
+        db.commit()
+        db.refresh(user)
         token = create_access_token({"email": user.email})
         return {
             "token": token, 
