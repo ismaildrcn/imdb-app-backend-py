@@ -9,7 +9,6 @@ from typing import Sequence, Union
 
 from alembic import op
 import sqlalchemy as sa
-from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
 revision: str = '048b2e769281'
@@ -40,11 +39,8 @@ def downgrade() -> None:
     op.drop_column('users', 'birthdate')
     op.drop_column('users', 'gender')
     op.create_table('sequelizemeta',
-    sa.Column('name', mysql.VARCHAR(collation='utf8mb3_unicode_ci', length=255), nullable=False),
-    sa.PrimaryKeyConstraint('name'),
-    mysql_collate='utf8mb3_unicode_ci',
-    mysql_default_charset='utf8mb3',
-    mysql_engine='InnoDB'
+    sa.Column('name', sa.String(length=255), nullable=False),
+    sa.PrimaryKeyConstraint('name')
     )
     op.create_index(op.f('name'), 'sequelizemeta', ['name'], unique=True)
     # ### end Alembic commands ###

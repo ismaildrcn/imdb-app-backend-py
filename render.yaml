@@ -1,0 +1,56 @@
+services:
+  # Web Service
+  - type: web
+    name: imdb-python-api
+    env: python
+    region: frankfurt
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: BASE_URL
+        sync: false
+      - key: API_TOKEN
+        sync: false
+      - key: LOCAL_URL
+        value: https://imdb-python-api.onrender.com
+      - key: LOCAL_PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALGORITHM
+        value: HS256
+      - key: DB_USER
+        sync: false
+      - key: DB_PASSWORD
+        sync: false
+      - key: DB_HOST
+        sync: false
+      - key: DB_PORT
+        value: 5432
+      - key: DB_DATABASE
+        sync: false
+      - key: DB_DIALECT
+        value: postgresql
+
+  # PostgreSQL Database
+  - type: pserv
+    name: imdb-python-db
+    env: docker
+    region: frankfurt
+    plan: free
+    image:
+      url: postgres:16
+    disk:
+      name: imdb-db-data
+      mountPath: /var/lib/postgresql/data
+      sizeGB: 1
+    envVars:
+      - key: POSTGRES_USER
+        value: imdb_user
+      - key: POSTGRES_PASSWORD
+        generateValue: true
+      - key: POSTGRES_DB
+        value: imdb_db
