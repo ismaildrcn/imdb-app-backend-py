@@ -42,7 +42,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = DATABASE_URL
+    from core.config import settings
+    url = settings.DATABASE_URL if settings.DATABASE_URL else DATABASE_URL
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -61,8 +62,9 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    from core.config import settings
     configuration = config.get_section(config.config_ini_section, {})
-    configuration["sqlalchemy.url"] = DATABASE_URL
+    configuration["sqlalchemy.url"] = settings.DATABASE_URL if settings.DATABASE_URL else DATABASE_URL
     connectable = engine_from_config(
         configuration,
         prefix="sqlalchemy.",

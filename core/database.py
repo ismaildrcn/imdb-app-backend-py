@@ -7,7 +7,11 @@ from models import user, wishlist  # Ensure models are imported for metadata
 from models.movies import movie, genre, belongs_to_collection, production_company, production_country, spoken_language
 
 
-DATABASE_URL = f"{settings.DB_DIALECT}://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_DATABASE}"
+# Render DATABASE_URL varsa onu kullan, yoksa parçalardan oluştur
+if settings.DATABASE_URL:
+    DATABASE_URL = settings.DATABASE_URL
+else:
+    DATABASE_URL = f"{settings.DB_DIALECT}://{settings.DB_USER}:{settings.DB_PASSWORD}@{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_DATABASE}"
 
 
 engine = create_engine(DATABASE_URL, echo=False)

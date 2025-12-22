@@ -13,11 +13,13 @@ class Settings:
     ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
 
     # Database Settings
+    # Render DATABASE_URL'i varsa onu kullan, yoksa ayrı değişkenlerden oluştur
+    DATABASE_URL: str = os.getenv("DATABASE_URL")
     DB_USER: str = os.getenv("DB_USER")
     DB_PASSWORD: str = os.getenv("DB_PASSWORD")
     DB_HOST: str = os.getenv("DB_HOST")
-    DB_PORT: int = int(os.getenv("DB_PORT", 3306))
+    DB_PORT: int = int(os.getenv("DB_PORT", 5432))
     DB_DATABASE: str = os.getenv("DB_DATABASE")
-    DB_DIALECT: str = os.getenv("DB_DIALECT")
+    DB_DIALECT: str = os.getenv("DB_DIALECT", "postgresql")
 
 settings = Settings()
