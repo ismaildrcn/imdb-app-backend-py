@@ -41,7 +41,8 @@ class User(Base):
         return email
 
     def to_json(self):
-        return {
+        print("Converting User to JSON")
+        data = {
             "id": self.id,
             "full_name": self.full_name,
             "email": self.email,
@@ -56,3 +57,5 @@ class User(Base):
             "created_at": self.created_at.isoformat(),
             "last_update": self.last_update.isoformat() if self.last_update else None
         }
+        print(f"User JSON data: {data}")
+        return data

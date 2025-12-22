@@ -12,6 +12,8 @@ def create_user(db: Session, user: UserCreate):
         email=user.email,
         full_name=user.full_name,
         password=hash_password(user.password),
+        gender=user.gender,
+        birthdate=user.birth_date,
         created_at=datetime.now()  # Şu anki tarih ve saat
     )
     db.add(db_user)

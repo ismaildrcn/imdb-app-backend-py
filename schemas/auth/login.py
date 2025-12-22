@@ -8,12 +8,14 @@ class UserCreate(UserBase):
     email: str
     password: str
     full_name: str
+    birth_date: str | None = None
+    gender: str | None = None
     
 
 class UserOut(UserBase):
     id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
