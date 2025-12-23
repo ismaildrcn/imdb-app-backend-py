@@ -42,20 +42,29 @@ class User(Base):
 
     def to_json(self):
         print("Converting User to JSON")
+        
+        # Helper function to convert date/datetime to ISO format string
+        def to_iso_string(value):
+            if value is None:
+                return None
+            if isinstance(value, str):
+                return value  # Eğer zaten string ise, direkt döndür
+            return value.isoformat()  # date veya datetime nesnesi ise isoformat kullan
+        
         data = {
             "id": self.id,
             "full_name": self.full_name,
             "email": self.email,
             "phone": self.phone,
             "gender": self.gender,
-            "birthdate": self.birthdate.isoformat() if self.birthdate else None,
+            "birth_date": to_iso_string(self.birthdate),
             "is_active": self.is_active,
             "is_verified": self.is_verified,
             "avatar_url": self.avatar_url,
             "role": self.role,
-            "last_login": self.last_login.isoformat() if self.last_login else None,
-            "created_at": self.created_at.isoformat(),
-            "last_update": self.last_update.isoformat() if self.last_update else None
+            "last_login": to_iso_string(self.last_login),
+            "created_at": to_iso_string(self.created_at),
+            "last_update": to_iso_string(self.last_update)
         }
         print(f"User JSON data: {data}")
         return data
