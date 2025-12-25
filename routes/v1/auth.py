@@ -7,6 +7,7 @@ from core.database import get_db
 from crud.user import create_user, login_user
 from core.config import settings
 from core.security import create_access_token
+from schemas.common.response import success_response
 
 router = APIRouter(
     prefix="/auth",
@@ -18,14 +19,11 @@ router = APIRouter(
 def login(login_request: UserBase, db: Session = Depends(get_db)):
     user = login_user(db, login_request)
     if user:
-        user.last_login = datetime.utcnow()
-        db.commit()
-        db.refresh(user)
         token = create_access_token({"email": user.email})
         return {
             "token": token, 
             "message": "Authentication successful",
-            "user": user.to_json()
+            "user": user
             }
     raise HTTPException(status_code=401, detail="Passsword veya email hatalı")
 
@@ -33,4 +31,7 @@ def login(login_request: UserBase, db: Session = Depends(get_db)):
 @router.post("/register")
 def register(user: UserCreate, db: Session = Depends(get_db)):
     new_user = create_user(db, user)
-    return {"message": f"User {new_user.email} registered successfully."}
+    return success_response(
+        data=new_user,
+        message="User registered successfully!"
+    )

@@ -1,4 +1,5 @@
 from sqlalchemy.orm import Session
+from dto.user_dto import UserDto
 from models.user import User
 from schemas.auth.login import UserBase, UserCreate
 from argon2 import PasswordHasher
@@ -19,12 +20,17 @@ def create_user(db: Session, user: UserCreate):
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
-    return db_user
+    user_dto = UserDto.from_entity(db_user)
+    return user_dto
 
 def login_user(db: Session, user: UserBase):
     login_user = db.query(User).filter(User.email == user.email).first()
     if login_user and verify_password(login_user.password, user.password):
-        return login_user
+        login_user.last_login = datetime.utcnow()
+        db.commit()
+        db.refresh(login_user)
+        user_dto = UserDto.from_entity(login_user)
+        return user_dto
     return None
 
 def get_users(db: Session):
@@ -66,11 +72,14 @@ def update_user(db: Session, data: UserSchema):
     if data.gender is not None:
         user.gender = data.gender
         has_changed = True
-    if data.birthdate is not None:
+    if data.birthdate is not None and data.birthdate != "":
         user.birthdate = data.birthdate
         has_changed = True
     if has_changed:
         user.last_update = datetime.utcnow()  # Güncelleme zamanını ayarla
         db.commit()
         db.refresh(user)
-    return user
+    
+    user_dto = UserDto.from_entity(user)
+    print(f"Updated User DTO: {user_dto}")
+    return user_dto

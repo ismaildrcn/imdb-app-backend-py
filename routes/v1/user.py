@@ -8,6 +8,7 @@ from crud.user import update_user
 from models.wishlist import Wishlist
 from schemas.user.user_schemas import UserSchema
 from schemas.wishlist.wishlist_schemas import WishlistCreate
+from schemas.common import success_response, error_response, ErrorDetail
 from services.remote.external_api import RemoteMovieService
 
 movie_service = RemoteMovieService()
@@ -28,9 +29,11 @@ def get_current_user(db: Session = Depends(get_db), token_data: dict = Depends(v
 
 @router.patch("/{user_id}", dependencies=[Depends(verify_token)])
 def update_user_details(user_id: int, payload: UserSchema, db: Session = Depends(get_db)):
-    print(payload)
-    update_user(db, payload)
-    return {"message": "User update endpoint called."}
+    response = update_user(db, payload)
+    return success_response(
+        data=response,
+        message="User details updated successfully!"
+    )
 
 @router.post("/{user_id}/wishlist", dependencies=[Depends(verify_token)])
 def add_to_wishlist(user_id: int, payload: WishlistCreate, db: Session = Depends(get_db)):
